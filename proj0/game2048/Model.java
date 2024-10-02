@@ -1,11 +1,13 @@
 package game2048;
 
+import org.junit.Test;
+
 import java.util.Formatter;
 import java.util.Observable;
 
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author Michael Yang TODO: YOUR NAME HERE
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -106,6 +108,37 @@ public class Model extends Observable {
      *    value, then the leading two tiles in the direction of motion merge,
      *    and the trailing tile does not.
      * */
+    public boolean tilt_col(int col_index) {
+        boolean changed;
+        changed = false;
+        boolean merge_or_not = false;
+        int score_add_by = 0;
+
+
+        for (int i = 3; i >= 0; i -= 1) {
+            if (tile(col_index, i) != null) {
+                int num_move = 0;
+                for (int j = i + 1; j <= 3; j += 1) {
+                    if (tile(col_index, j) == null) {
+                        num_move += 1;
+                    } else if (tile(col_index, j).value() == tile(col_index, i).value() && !merge_or_not) {
+                        num_move += 1;
+                        score_add_by += tile(col_index, j).value() + tile(col_index, i).value();
+                        break;
+                    } else {
+                        break;
+                    }
+                }
+                if (num_move > 0) {
+                    merge_or_not = board.move(col_index, i + num_move, tile(col_index, i));
+                    changed = true;
+                }
+            }
+        }
+        this.score += score_add_by;
+        return changed;
+    }
+
     public boolean tilt(Side side) {
         boolean changed;
         changed = false;
@@ -113,6 +146,15 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        board.setViewingPerspective(side);
+
+        for (int col_index = 0; col_index <= 3; col_index += 1) {
+            if (tilt_col(col_index)) {
+                changed = true;
+            }
+        }
+
+        board.setViewingPerspective(Side.NORTH);
 
         checkGameOver();
         if (changed) {
@@ -138,6 +180,13 @@ public class Model extends Observable {
      * */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
+        for (int col = 0; col < b.size(); col += 1) {
+            for (int row = 0; row < b.size(); row += 1) {
+                if (b.tile(col, row) == null) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -148,6 +197,17 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        for (int col = 0; col < b.size(); col += 1) {
+            for (int row = 0; row < b.size(); row += 1) {
+                Tile x = b.tile(col, row);
+                if (x == null) {
+                    continue;
+                }
+                if (x.value() == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -159,12 +219,39 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+        if (emptySpaceExists(b)) {
+            return true;
+        }
+        for (int col = 0; col < b.size(); col += 1) {
+            for (int row = 0; row < b.size(); row += 1) {
+                if (0 <= col - 1 && col - 1 < b.size()) {
+                    if (b.tile(col - 1, row).value() == b.tile(col, row).value()){
+                        return true;
+                    }
+                }
+                if (col + 1 < b.size()) {
+                    if (b.tile(col + 1, row).value() == b.tile(col, row).value()){
+                        return true;
+                    }
+                }
+                if (0 <= row - 1 && row - 1 < b.size()) {
+                    if (b.tile(col, row - 1).value() == b.tile(col, row).value()){
+                        return true;
+                    }
+                }
+                if (row + 1 < b.size()) {
+                    if (b.tile(col, row + 1).value() == b.tile(col, row).value()) {
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
 
     @Override
-     /** Returns the model as a string, used for debugging. */
+    /** Returns the model as a string, used for debugging. */
     public String toString() {
         Formatter out = new Formatter();
         out.format("%n[%n");
