@@ -143,30 +143,28 @@ public class ArrayDeque<T> implements Iterable<T> {
             return true;
         }
 
-        if (o instanceof ArrayDeque otherDeque) {
-            for (int i = 0; i < size; i++) {
-                if (this.get(i) != otherDeque.get(i)) {
+        if (!(o instanceof ArrayDeque)) {
+            return false;
+        }
+        ArrayDeque<?> otherDeque = (ArrayDeque<?>) o;
+
+        if (size != otherDeque.size) {
+            return false;
+        }
+
+        for (int i = 0; i < size; i++) {
+            T thisItem = this.get(i);
+            Object otherItem = otherDeque.get(i);
+            if (thisItem == null) {
+                if (otherItem != null) {
+                    return false;
+                }
+            } else {
+                if (!thisItem.equals(otherItem)) {
                     return false;
                 }
             }
         }
         return true;
-    }
-
-    public static void main(String[] args) {
-        ArrayDeque<Integer> deque = new ArrayDeque<Integer>();
-        deque.addFirst(1);
-        deque.addLast(2);
-        deque.addFirst(1);
-        deque.addLast(2);
-        deque.addFirst(1);
-        deque.addLast(2);
-        deque.addFirst(1);
-        deque.addLast(2);
-        deque.addFirst(1);
-        deque.addLast(2);
-        deque.addFirst(1);
-        deque.addLast(2);
-        deque.get(0);
     }
 }

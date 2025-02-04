@@ -161,9 +161,24 @@ public class LinkedListDeque<T> implements Iterable<T> {
             return true;
         }
 
-        if (o instanceof LinkedListDeque otherDeque) {
-            for (int i = 0; i < size; i++) {
-                if (this.get(i) != otherDeque.get(i)) {
+        if (!(o instanceof LinkedListDeque)) {
+            return false;
+        }
+        LinkedListDeque<?> otherDeque = (LinkedListDeque<?>) o;
+
+        if (size != otherDeque.size) {
+            return false;
+        }
+
+        for (int i = 0; i < size; i++) {
+            T thisItem = this.get(i);
+            Object otherItem = otherDeque.get(i);
+            if (thisItem == null) {
+                if (otherItem != null) {
+                    return false;
+                }
+            } else {
+                if (!thisItem.equals(otherItem)) {
                     return false;
                 }
             }
@@ -171,3 +186,5 @@ public class LinkedListDeque<T> implements Iterable<T> {
         return true;
     }
 }
+
+
