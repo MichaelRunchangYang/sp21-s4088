@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class LinkedListDeque<T> implements Iterable<T> {
+public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
 
     private class TNode<T>{
         public T item;
@@ -33,6 +33,7 @@ public class LinkedListDeque<T> implements Iterable<T> {
         size = 0;
     }
 
+    @Override
     public void addFirst(T item) {
 
         TNode newNode = new TNode(sentinel, item, sentinel.next);
@@ -43,6 +44,7 @@ public class LinkedListDeque<T> implements Iterable<T> {
         size++;
     }
 
+    @Override
     public void addLast(T item) {
 
         TNode newNode = new TNode(sentinel.prev, item, sentinel);
@@ -53,28 +55,27 @@ public class LinkedListDeque<T> implements Iterable<T> {
         size++;
     }
 
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
+    @Override
     public int size() {
         return size;
     }
 
-    public T printDeque() {
-
+    @Override
+    public void printDeque() {
+        if (size == 0) {
+            System.out.println();
+            return;
+        }
         TNode current = sentinel.next;
-
         for (int i = 0; i < size; i++) {
             System.out.print(current.item);
             System.out.print(" ");
             current = current.next;
         }
         System.out.println('\n');
-
-        return null;
     }
 
+    @Override
     public T removeFirst() {
 
         if (size == 0) {
@@ -90,6 +91,7 @@ public class LinkedListDeque<T> implements Iterable<T> {
         return toBeRemoved;
     }
 
+    @Override
     public T removeLast() {
 
         if (size == 0) {
@@ -105,6 +107,7 @@ public class LinkedListDeque<T> implements Iterable<T> {
         return toBeRemoved;
     }
 
+    @Override
     public T get(int index) {
 
         if (index < 0 || index >= size) {
@@ -145,9 +148,11 @@ public class LinkedListDeque<T> implements Iterable<T> {
         public LinkedListIterator() {
             currentPos = 0;
         }
+        @Override
         public boolean hasNext() {
             return currentPos < size;
         }
+        @Override
         public T next() {
             T returnItem = (T) get(currentPos);
             currentPos++;
