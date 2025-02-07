@@ -3,21 +3,20 @@ package deque;
 import java.util.Iterator;
 
 public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
-    public T[] items;
-    public int size;
-    public int nextFirst;
-    public int nextLast;
+    private T[] items;
+    private int size;
+    private int nextFirst;
+    private int nextLast;
 
-    // Constructor
     public ArrayDeque() {
-        items = (T[])new Object[8];
+        items = (T[]) new Object[8];
         size = 0;
         nextFirst = 3;
         nextLast = 4;
     }
 
     private void resize(int capacity) {
-        T[] newItems = (T[])new Object[capacity];
+        T[] newItems = (T[]) new Object[capacity];
         int toCopyIndex = (nextFirst + 1) % items.length;
         for (int i = 0; i < size; i++) {
             newItems[i] = items[toCopyIndex];
@@ -29,18 +28,16 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     }
 
     @Override
-    // Adds an item of type T to the front of the deque
     public void addFirst(T item) {
         if (size == items.length) {
             resize(items.length * 2);
         }
         items[nextFirst] = item;
-        nextFirst = (nextFirst - 1 +items.length) % items.length;
+        nextFirst = (nextFirst - 1 + items.length) % items.length;
         size++;
     }
 
     @Override
-    // Adds an item of type T to the back of the deque
     public void addLast(T item) {
         if (size == items.length) {
             resize(items.length * 2);
@@ -51,13 +48,11 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     }
 
     @Override
-    // Returns the number of items in the deque
     public int size() {
         return size;
     }
 
     @Override
-    // Prints the items in the deque from first to last, separated by a space
     public void printDeque() {
         if (size == 0) {
             System.out.println();
@@ -68,12 +63,11 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
             System.out.print(items[toPrintIndex] + " ");
             toPrintIndex = (toPrintIndex + 1) % items.length;
         }
-        System.out.print(items[(nextLast-1+items.length)%items.length]);
+        System.out.print(items[(nextLast - 1 + items.length) % items.length]);
         System.out.println();
     }
 
     @Override
-    // Removes and returns the item at the front of the deque
     public T removeFirst() {
         if (size == 0) {
             return null;
@@ -83,14 +77,13 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         items[toRemoveIndex] = null;
         nextFirst = (nextFirst + 1) % items.length;
         size--;
-        if (size > 8 && (double) size / items.length < .25) {
+        if (size > 8 && (double) size / items.length < 0.25) {
             resize(items.length / 2);
         }
         return toRemove;
     }
 
     @Override
-    // Removes and returns the item at the back of the deque
     public T removeLast() {
         if (size == 0) {
             return null;
@@ -100,14 +93,13 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         items[toRemoveIndex] = null;
         nextLast = (nextLast - 1 + items.length) % items.length;
         size--;
-        if (size > 8 && (double) size / items.length < .25) {
+        if (size > 8 && (double) size / items.length < 0.25) {
             resize(items.length / 2);
         }
         return toRemove;
     }
 
     @Override
-    // Gets the item at the given index
     public T get(int index) {
         if (index < 0 || index >= size) {
             return null;
@@ -116,44 +108,46 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         return items[realIndex];
     }
 
-    // Returns an iterator over elements of type T
     @Override
     public Iterator<T> iterator() {
         return new DequeIterator();
     }
 
     private class DequeIterator implements Iterator<T> {
-        int currentPos = (nextFirst + 1) % items.length;
+        private int position;
+        private int count;
+
+        DequeIterator() {
+            position = (nextFirst + 1) % items.length;
+            count = 0;
+        }
 
         @Override
         public boolean hasNext() {
-            return currentPos > nextFirst || currentPos < nextLast;
+            return count < size;
         }
 
         @Override
         public T next() {
-            T toReturn = items[currentPos];
-            currentPos = (currentPos + 1) % items.length;
+            T toReturn = items[position];
+            position = (position + 1) % items.length;
+            count++;
             return toReturn;
         }
     }
 
-    // Returns whether or not the parameter o is equal to the Deque
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-
-        if (!(o instanceof ArrayDeque)) {
+        if (!(o instanceof Deque)) {
             return false;
         }
-        ArrayDeque<?> otherDeque = (ArrayDeque<?>) o;
-
-        if (size != otherDeque.size) {
+        Deque<?> otherDeque = (Deque<?>) o;
+        if (size != otherDeque.size()) {
             return false;
         }
-
         for (int i = 0; i < size; i++) {
             T thisItem = this.get(i);
             Object otherItem = otherDeque.get(i);
@@ -161,10 +155,8 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
                 if (otherItem != null) {
                     return false;
                 }
-            } else {
-                if (!thisItem.equals(otherItem)) {
-                    return false;
-                }
+            } else if (!thisItem.equals(otherItem)) {
+                return false;
             }
         }
         return true;
