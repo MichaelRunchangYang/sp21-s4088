@@ -3,10 +3,10 @@ package bstmap;
 import java.util.Iterator;
 import java.util.Set;
 
-public class BSTMap<K extends Comparable, V> implements Map61B<K,V> {
+public class BSTMap<K extends Comparable<K>, V> implements Map61B<K,V> {
 
-    int size = 0;
-    BSTNode root;
+    private int size = 0;
+    private BSTNode root;
 
     private class BSTNode {
         private K key;
@@ -84,7 +84,7 @@ public class BSTMap<K extends Comparable, V> implements Map61B<K,V> {
 
     private void put(K key, V value, BSTNode node) {
         if (key.compareTo(node.key) < 0) {
-            if(node.left == null) {
+            if (node.left == null) {
                 BSTNode newNode = new BSTNode();
                 newNode.key = key;
                 newNode.value = value;
@@ -95,7 +95,7 @@ public class BSTMap<K extends Comparable, V> implements Map61B<K,V> {
                 put(key, value, node.left);
             }
         } else {
-            if(node.right == null) {
+            if (node.right == null) {
                 BSTNode newNode = new BSTNode();
                 newNode.key = key;
                 newNode.value = value;
@@ -106,6 +106,19 @@ public class BSTMap<K extends Comparable, V> implements Map61B<K,V> {
                 put(key, value, node.right);
             }
         }
+    }
+
+    public void printInOrder() {
+        printInOrder(root);
+    }
+
+    private void printInOrder(BSTNode node) {
+        if (node == null || node.key == null) {
+            return;
+        }
+        printInOrder(node.left);
+        System.out.println(node.key + ": " + node.value);
+        printInOrder(node.right);
     }
 
     @Override
@@ -126,9 +139,5 @@ public class BSTMap<K extends Comparable, V> implements Map61B<K,V> {
     @Override
     public Iterator<K> iterator() {
         throw new UnsupportedOperationException("This method is not yet implemented.");
-    }
-
-    public static void main(String[] args) {
-
     }
 }
